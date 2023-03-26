@@ -1,33 +1,39 @@
-import React, {Component} from 'react';
+import React, { useState, useEffect } from 'react';
 import CardList from '../componenets/CardList';
 import SearchBox from '../componenets/SearchBox';
 import Scroll from '../componenets/Scroll';
 import ErrorBoundary from '../componenets/ErrorBoundary';
 import './App.css';
 
-class App extends Component {
+function App() {
 
-  constructor() {
-    super();
-    this.state = {
-      robots: [],
-      searchfield: ''
+  // constructor() {
+  //   super();
+  //   this.state = {
+  //     robots: [],
+  //     searchfield: ''
+  //   }
+  // }
+
+  const [ robots, setRobots ] = useState([]);
+  const [ searchfield, setSearchField ] = useState('');
+
+  // componentDidMount() {
+  //   fetch("https://jsonplaceholder.typicode.com/users")
+  //     .then(response => response.json())
+  //     .then(users => this.setState({robots: users}));
+  // }
+
+    useEffect(() => {
+        fetch("https://jsonplaceholder.typicode.com/users")
+          .then(response => response.json())
+          .then(users => setRobots(users));
+    }, [])
+
+    const onsearchchange = (e) => {
+      setSearchField(e.target.value);
     }
-  }
-
-  componentDidMount() {
-    fetch("https://jsonplaceholder.typicode.com/users")
-      .then(response => response.json())
-      .then(users => this.setState({robots: users}));
-  }
-
-  onsearchchange = (e) => {
-    this.setState({searchfield: e.target.value});
-  }
-
-
-  render() {
-    const { robots, searchfield } = this.state;
+    
     const filteredRobots = robots.filter(robot => {
       return robot.name.toLowerCase().includes(searchfield.toLowerCase());
     });
@@ -36,7 +42,7 @@ class App extends Component {
     (
       <div className='tc'>
           <h1 className='f1'>RoboFriends</h1>
-          <SearchBox searchChange={this.onsearchchange} />
+          <SearchBox searchChange={onsearchchange} />
           <Scroll>
             <ErrorBoundary>
               <CardList robots={filteredRobots} />
@@ -45,6 +51,5 @@ class App extends Component {
       </div>
     )
   }
-}
 
 export default App;
